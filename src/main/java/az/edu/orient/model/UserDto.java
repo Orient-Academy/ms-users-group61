@@ -1,0 +1,10 @@
+package az.edu.orient.model;
+
+import lombok.Data;
+
+@Data
+public class UserDto {
+  private Long id;
+  private String firstName;
+  private String lastName;
+}
