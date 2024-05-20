@@ -12,7 +12,6 @@ public interface UserMapper {
 
   UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-  @Mapping(ignore = true, target = "id")
   UserEntity toEntity(UserDto userDto);
 
   UserDto toDto(UserEntity userEntity);
