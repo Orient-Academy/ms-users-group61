@@ -18,4 +18,21 @@ public class UserEntity {
   private Long id;
   private String firstName;
   private String lastName;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    UserEntity that = (UserEntity) o;
+    return id.equals(that.id) && firstName.equals(that.firstName) && lastName.equals(that.lastName);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = id.hashCode();
+    result = 31 * result + firstName.hashCode();
+    result = 31 * result + lastName.hashCode();
+    return result;
+  }
 }

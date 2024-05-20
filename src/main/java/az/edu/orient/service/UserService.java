@@ -43,7 +43,7 @@ public class UserService {
       throw new OrientException("ID can not be null for updated user!", HttpStatus.BAD_REQUEST);
     UserEntity currentUserEntity = getUserEntityById(id);
     UserEntity updatedUserEntity = UserMapper.INSTANCE.toEntity(userDto);
-    if (isUserEntitiesSame(currentUserEntity, updatedUserEntity))
+    if (currentUserEntity.equals(updatedUserEntity))
       throw new OrientException("There is not change in updated user details!", HttpStatus.CONFLICT);
     UserEntity saved = userRepository.save(updatedUserEntity);
     return UserMapper.INSTANCE.toDto(saved);
@@ -59,9 +59,4 @@ public class UserService {
             .orElseThrow(() -> new OrientException("User not found!", HttpStatus.NOT_FOUND));
   }
 
-  private boolean isUserEntitiesSame(UserEntity user1, UserEntity user2) {
-    return Objects.equals(user1.getId(), user2.getId()) &&
-            Objects.equals(user1.getFirstName(), user2.getFirstName()) &&
-            Objects.equals(user1.getLastName(), user2.getLastName());
-  }
 }
