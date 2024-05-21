@@ -11,6 +11,9 @@ public class CountryValidator implements ConstraintValidator<ValidCountry, Strin
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if(value == null) {
+            return false;
+        }
         return "AZE".equals(value);
     }
 }

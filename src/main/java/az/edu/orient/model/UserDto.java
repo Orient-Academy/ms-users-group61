@@ -2,9 +2,14 @@ package az.edu.orient.model;
 
 import az.edu.orient.validation.ValidCountry;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
   private Long id;
   @NotNull(message = "firstName is required")

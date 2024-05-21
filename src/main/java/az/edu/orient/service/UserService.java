@@ -22,7 +22,7 @@ public class UserService {
     List<UserEntity> users = userRepository.findAll();
     if (users.isEmpty())
       throw new OrientException("There is not any user yet!", HttpStatus.NOT_FOUND);
-    return users.stream().map(UserMapper.INSTANCE::toDto).toList();
+    return UserMapper.INSTANCE.toDto(users);
   }
 
   public UserDto getUserById(Long id) throws OrientException {

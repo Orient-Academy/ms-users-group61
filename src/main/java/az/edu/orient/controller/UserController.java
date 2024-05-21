@@ -5,6 +5,7 @@ import az.edu.orient.model.UserDto;
 import az.edu.orient.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
@@ -43,6 +44,7 @@ public class UserController {
   }
 
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseStatus(HttpStatus.CREATED)
   public UserDto addUser(@Valid @RequestBody  UserDto userDto) {
     return userService.addUser(userDto);
   }

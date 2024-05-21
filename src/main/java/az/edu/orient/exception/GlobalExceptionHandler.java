@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(OrientException.class)
-    public ResponseEntity<String> handleOrientException(OrientException ex) {
-        return ResponseEntity.status(ex.getHttpStatus()).body(ex.getMessage());
+    public ResponseEntity<ExceptionResponse> handleOrientException(OrientException ex) {
+        var result = ExceptionResponse.builder().httpCode(ex.getHttpStatus().value()).message(ex.getMessage()).build();
+
+        return ResponseEntity.status(ex.getHttpStatus()).body(result);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

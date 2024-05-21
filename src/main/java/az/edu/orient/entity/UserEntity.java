@@ -18,6 +18,7 @@ public class UserEntity {
   private Long id;
   private String firstName;
   private String lastName;
+  private String country;
 
   @Override
   public boolean equals(Object o) {

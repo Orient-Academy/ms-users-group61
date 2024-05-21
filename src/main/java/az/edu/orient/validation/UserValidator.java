@@ -18,8 +18,5 @@ public class UserValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         UserDto userDto = (UserDto) target;
-        if(userDto.getId() <= 0) {
-            errors.rejectValue("id", "", "Id could not be negative number or Zero");
-        }
     }
 }
