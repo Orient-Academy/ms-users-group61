@@ -1,62 +1,60 @@
 package az.edu.orient.service;
 
 import az.edu.orient.entity.UserEntity;
-import az.edu.orient.exception.OrientException;
+import az.edu.orient.exception.NoChangeInUpdateException;
+import az.edu.orient.exception.NonNullableParamException;
+import az.edu.orient.exception.UserNotFoundException;
 import az.edu.orient.mapper.UserMapper;
 import az.edu.orient.model.UserDto;
 import az.edu.orient.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final UserRepository userRepository;
 
-  private final UserRepository userRepository;
+    public List<UserDto> getUsers() {
+        List<UserEntity> users = userRepository.findAll();
+        return users.stream().map(UserMapper.INSTANCE::toDto).toList();
+    }
 
-  public List<UserDto> getUsers() throws OrientException {
-    List<UserEntity> users = userRepository.findAll();
-    if (users.isEmpty())
-      throw new OrientException("There is not any user yet!", HttpStatus.NOT_FOUND);
-    return users.stream().map(UserMapper.INSTANCE::toDto).toList();
-  }
+    public UserDto getUserById(Long id) {
+        UserEntity user = getUserEntityById(id);
+        return UserMapper.INSTANCE.toDto(user);
+    }
 
-  public UserDto getUserById(Long id) throws OrientException {
-    UserEntity user = getUserEntityById(id);
-    return UserMapper.INSTANCE.toDto(user);
-  }
+    public UserDto addUser(UserDto userDto) {
+        UserEntity userEntity = UserMapper.INSTANCE.toEntity(userDto);
+        userEntity.setId(null);
+        UserEntity saved = userRepository.save(userEntity);
+        return UserMapper.INSTANCE.toDto(saved);
+    }
 
-  public UserDto addUser(UserDto userDto) {
-    UserEntity userEntity = UserMapper.INSTANCE.toEntity(userDto);
-    userEntity.setId(null);
-    UserEntity saved = userRepository.save(userEntity);
-    return UserMapper.INSTANCE.toDto(saved);
-  }
+    public UserDto updateUser(UserDto userDto) {
+        Long id = userDto.getId();
+        if (id == null) {
+            throw new NonNullableParamException("ID can not be null for updated user!");
+        }
+        UserEntity currentUserEntity = getUserEntityById(id);
+        UserEntity updatedUserEntity = UserMapper.INSTANCE.toEntity(userDto);
+        if (currentUserEntity.equals(updatedUserEntity)) {
+            throw new NoChangeInUpdateException("There is not change in updated user details!");
+        }
+        UserEntity saved = userRepository.save(updatedUserEntity);
+        return UserMapper.INSTANCE.toDto(saved);
+    }
 
-  public UserDto updateUser(UserDto userDto) throws OrientException {
-    Long id = userDto.getId();
-    if (id == null)
-      throw new OrientException("ID can not be null for updated user!", HttpStatus.BAD_REQUEST);
-    UserEntity currentUserEntity = getUserEntityById(id);
-    UserEntity updatedUserEntity = UserMapper.INSTANCE.toEntity(userDto);
-    if (currentUserEntity.equals(updatedUserEntity))
-      throw new OrientException("There is not change in updated user details!", HttpStatus.CONFLICT);
-    UserEntity saved = userRepository.save(updatedUserEntity);
-    return UserMapper.INSTANCE.toDto(saved);
-  }
+    public void deleteUser(Long id) {
+        getUserEntityById(id);
+        userRepository.deleteById(id);
+    }
 
-  public void deleteUser(Long id) throws OrientException {
-    UserEntity user = getUserEntityById(id);
-    userRepository.deleteById(id);
-  }
-
-  private UserEntity getUserEntityById(Long id) throws OrientException{
-      return userRepository.findById(id)
-            .orElseThrow(() -> new OrientException("User not found!", HttpStatus.NOT_FOUND));
-  }
-
+    private UserEntity getUserEntityById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found!"));
+    }
 }

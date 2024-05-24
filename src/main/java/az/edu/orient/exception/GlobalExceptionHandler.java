@@ -6,15 +6,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(OrientException.class)
     public ResponseEntity<String> handleOrientException(OrientException ex) {
-        return ResponseEntity.status(ex.getHttpStatus()).body(ex.getMessage());
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

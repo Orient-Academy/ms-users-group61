@@ -1,8 +1,6 @@
 package az.edu.orient.validation;
 
 import az.edu.orient.model.UserDto;
-import az.edu.orient.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

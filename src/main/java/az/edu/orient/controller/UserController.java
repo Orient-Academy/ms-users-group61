@@ -11,7 +11,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "users")
@@ -21,24 +21,22 @@ public class UserController {
   private final UserService userService;
   private final List<Validator> validators;
 
-  @InitBinder
-  private void initBinder(WebDataBinder binder) {
-    if (Objects.nonNull(binder.getTarget())) {
-      for (Validator requestValidator : validators) {
-        if (requestValidator.supports(binder.getTarget().getClass())) {
-          binder.addValidators(requestValidator);
-        }
-      }
-    }
+  @InitBinder private void initBinder(WebDataBinder binder) {
+    Optional.ofNullable(binder.getTarget())
+            .ifPresent(target ->
+                    validators.stream()
+                            .filter(v -> v.supports(target.getClass()))
+                            .forEach(binder::addValidators)
+            );
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<UserDto> getUsers() throws OrientException {
+  public List<UserDto> getUsers() {
     return userService.getUsers();
   }
 
   @GetMapping(path = "{id}")
-  public UserDto getUserById(@PathVariable Long id) throws OrientException {
+  public UserDto getUserById(@PathVariable Long id) {
     return userService.getUserById(id);
   }
 
@@ -53,8 +51,8 @@ public class UserController {
     return userService.updateUser(userDto);
   }
 
-  @DeleteMapping(path = "{id}")
-  public void deleteById(@PathVariable(name = "id") Long id) throws OrientException {
+  @DeleteMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public void deleteById(@PathVariable(name = "id") Long id) {
     userService.deleteUser(id);
   }
 }
