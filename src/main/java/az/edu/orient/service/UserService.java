@@ -1,11 +1,15 @@
 package az.edu.orient.service;
 
+import az.edu.orient.client.account.AccountClient;
+import az.edu.orient.client.account.dto.AccountDto;
 import az.edu.orient.entity.UserEntity;
 import az.edu.orient.exception.OrientException;
 import az.edu.orient.mapper.UserMapper;
 import az.edu.orient.model.UserDto;
 import az.edu.orient.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +21,10 @@ import java.util.Objects;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final AccountClient accountClient;
+  private final RabbitMessagingTemplate rabbitMessagingTemplate;
+  @Value("${spring.rabbitmq.queue.user}")
+  private String queueName;
 
   public List<UserDto> getUsers() throws OrientException {
     List<UserEntity> users = userRepository.findAll();
@@ -34,7 +42,15 @@ public class UserService {
     UserEntity userEntity = UserMapper.INSTANCE.toEntity(userDto);
     userEntity.setId(null);
     UserEntity saved = userRepository.save(userEntity);
-    return UserMapper.INSTANCE.toDto(saved);
+
+    AccountDto accountDto = AccountDto.builder()
+            .userId(saved.getId())
+            .build();
+
+    accountClient.createAccount(accountDto);
+    UserDto result = UserMapper.INSTANCE.toDto(saved);
+    rabbitMessagingTemplate.convertAndSend(queueName, result);
+    return result;
   }
 
   public UserDto updateUser(UserDto userDto) throws OrientException {

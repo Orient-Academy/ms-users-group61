@@ -7,10 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class UserDto implements Serializable {
   private Long id;
   @NotNull(message = "firstName is required")
   private String firstName;
@@ -18,4 +20,5 @@ public class UserDto {
   private String lastName;
   @ValidCountry
   private String country;
+  private String email;
 }

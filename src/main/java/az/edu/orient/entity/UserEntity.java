@@ -19,6 +19,7 @@ public class UserEntity {
   private String firstName;
   private String lastName;
   private String country;
+  private String email;
 
   @Override
   public boolean equals(Object o) {
